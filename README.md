@@ -1,4 +1,4 @@
-# berkeley-ai-searchEating
+# berkeley-ai-search
  Berkeley AI Project 1 : Search
 
  In this project I implement various search algorithms:
@@ -35,7 +35,7 @@ As well as utilize these search algorithms to solve various problems within the 
     In this problem I had to implement the DFS algorithm to solve pacman tinyMaze, mediumMaze, and bigMaze.
 
     ```python
-    
+
     def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first.
