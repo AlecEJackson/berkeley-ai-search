@@ -87,47 +87,67 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
+    # Implement the stack
     stack = util.Stack()
     visited = {}
+
+    # Push the start state onto the stack
     start = problem.getStartState()
     stack.push((start, []))
 
+    # While there are states still left to expand
     while not stack.isEmpty():
+
+        # Pop the most recent state off the stack and visit it
         state, path = stack.pop()
         visited[state] = True
 
+        # If the state is the goal return the path
         if problem.isGoalState(state):
             return path
 
+        # Otherwise expand the state
         successors = problem.getSuccessors(state)
 
+        # Add its neighbors onto the stack, while updating the path
         for s in successors:
             if s[0] not in visited:
                 stack.push((s[0], path + [s[1]]))
 
+    # No path found, return an empty path
     return []
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+    # Implement the queue
     queue = util.Queue()
     visited = []
+
+    # Push the start state onto the queue
     start = problem.getStartState()
     queue.push((start, []))
 
+    # While there are states still left to expand
     while not queue.isEmpty():
+
+        # Pop the next state off the queue and visit it
         state, path = queue.pop()
         visited.append(state)
 
+        # If the state is the goal return the path
         if problem.isGoalState(state):
             return path
 
+        # Otherwise expand the state
         successors = problem.getSuccessors(state)
 
+        # Add its neighors onto the queue, while updating the path if the node hasn't already been visited and its not in queue already.
         for s in successors:
             if s[0] not in visited and s[0] not in (state[0] for state in queue.list):
                 queue.push((s[0], path + [s[1]]))
 
+    # No path found, return an empty path
     return []
 
 
@@ -135,34 +155,57 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
+    # Implement the priority queue
     pqueue = util.PriorityQueue()
     visited = {}
+
+    # Store the path
     path = []
 
+    # Push the start state onto the queue with priority of 0
     start = problem.getStartState()
     pqueue.push((start,[]), 0)
 
+    # While there are states still left to expand
     while not pqueue.isEmpty():
+
+        # Pop the next state off the queue and visit it
         state, path = pqueue.pop()
         visited[state] = True
 
+        # If the state is the goal return the path
         if problem.isGoalState(state):
             return path
         
+        # Otherwise expand the state
         successors = problem.getSuccessors(state)
 
+        # Add its neighors onto the queue
         for s in successors:
+
+            # If the state isn't visited and doesn't exist in the queue
             if s[0] not in visited and s[0] not in (state[2][0] for state in pqueue.heap):
+
+                # Add it to the path, get the cost of the state, and push it onto the queue
                 newPath = path + [s[1]]
                 pri = problem.getCostOfActions(newPath)
                 pqueue.push((s[0], newPath), pri)
+
+            # Else if the state isn't visited but exists in the queue
             elif s[0] not in visited and s[0] in (state[2][0] for state in pqueue.heap):
+
+                # Find the state in the queue
                 for hstate in pqueue.heap:
                     if hstate[2][0] == s[0]:
+
+                        # If the old cost is greater than the new cost push the state onto the queue with the new cost
                         oldPri = problem.getCostOfActions(hstate[2][1])
                         newPri = problem.getCostOfActions(path + [s[1]])
                         if oldPri > newPri:
                             pqueue.push((s[0], (path + [s[1]])), s[2])
+
+    # No path found, return an empty path
+    return []
 
 def nullHeuristic(state, problem=None):
     """
@@ -174,34 +217,54 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
+
+    # Implement the priority queue
     pqueue = util.PriorityQueue()
     visited = {}
+
+    # Store the path here
     path = []
 
+    # Push the start state onto the queue with priority 0 + the cost of the heuristic
     start = problem.getStartState()
     pqueue.push((start,[]), 0 + heuristic(start, problem))
 
+    # While there are states still left to expand
     while not pqueue.isEmpty():
+
+        # Pop the next state off the queue and visit it
         state, path = pqueue.pop()
         visited[state] = True
 
+        # If the state is the goal return the path
         if problem.isGoalState(state):
             return path
         
+        # Otherwise expand the state
         successors = problem.getSuccessors(state)
 
+        # Add its neighors onto the queue
         for s in successors:
+
+            # If the state isn't visited and doesn't exist in the queue
             if s[0] not in visited and s[0] not in (state[2][0] for state in pqueue.heap):
                 newPath = path + [s[1]]
                 pri = problem.getCostOfActions(newPath)
                 pqueue.push((s[0], newPath), pri + heuristic(s[0], problem))
+
+            # Else if the state isn't visited but exists in the queue
             elif s[0] not in visited and s[0] in (state[2][0] for state in pqueue.heap):
                 for hstate in pqueue.heap:
                     if hstate[2][0] == s[0]:
+
+                        # If the old cost is greater than the new cost push the state onto the queue with the new cost
                         oldPri = problem.getCostOfActions(hstate[2][1])
                         newPri = problem.getCostOfActions(path + [s[1]])
                         if oldPri > newPri:
                             pqueue.push((s[0], (path + [s[1]])), newPri + heuristic(s[0], problem))
+
+    # No path found, return an empty path
+    return []
 
 
 # Abbreviations

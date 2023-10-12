@@ -288,6 +288,8 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+
+        # State used to determine if all corners have been visited
         self.initialState = [0,0,0,0]
 
     def getStartState(self):
@@ -296,6 +298,8 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
+
+        # Returns the start state and the state of the corners
         return (self.startingPosition, self.initialState)
 
     def isGoalState(self, state):
@@ -303,6 +307,8 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
+
+        # If all the corners haven't been visited, or are 0, return False
         for corner in state[1]:
             if corner == 0:
                 return False
@@ -332,20 +338,30 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
+
+            # Retrieve the state being expanded and a shallow copy of the corners
             x,y = state[0]
             corner = state[1][:]
+
+            # Get the position of the successor states neighboring the expanded state
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
-            if not self.walls[nextx][nexty]:
 
+            # If the position isnt located in a wall
+            if not self.walls[nextx][nexty]:
+                
+                # If the position is a corner update the corner as visited
                 if (nextx, nexty) in self.corners:
                     corner[self.corners.index((nextx, nexty))] = 1
 
+                # Construct the state
                 nextState = ((nextx, nexty), corner)
                 cost = 1
 
+                # Append the state as a successor
                 successors.append((nextState, action, cost))
-            
+        
+        # Update the number of expanded states and return the successors
         self._expanded += 1 # DO NOT CHANGE
         return successors
 
