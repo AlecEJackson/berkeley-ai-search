@@ -15,7 +15,7 @@
 - [Q2: Breadth First Search](#q2-breadth-first-search)
 - [Q3: Uniform Cost Search](#q3-uniform-cost-search)
 - [Q4: A* Search](#q4-a-search)
-- [Q5: Corners Problem: Representation](#q5-corners-problem:-representation)
+- [Q5: Corners Problem: Representation](#q5-corners-problem-representation)
 - [Q6: Corners Problem: Heuristic](#q6-corners-problem-heuristic)
 - [Q7: Eating All The Dots: Heuristic](#q7-eating-all-the-dots-heuristic)
 - [Q8: Suboptimal Search](#q8-suboptimal-search)
