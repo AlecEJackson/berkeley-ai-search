@@ -220,7 +220,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 
     # Implement the priority queue
     pqueue = util.PriorityQueue()
-    visited = {}
+    visited = []
 
     # Store the path here
     path = []
@@ -234,7 +234,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 
         # Pop the next state off the queue and visit it
         state, path = pqueue.pop()
-        visited[state] = True
+        visited.append(state)
 
         # If the state is the goal return the path
         if problem.isGoalState(state):

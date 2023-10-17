@@ -23,7 +23,6 @@
 ## Reflection
 - [Built with](#built-with)
 - [What I learned](#what-i-learned)
-- [Author](#author)
 
 ## Q1: Depth First Search
 
@@ -500,14 +499,165 @@
 
 ***Implement a non-trivial, consistent heuristic for the CornersProblem in cornersHeuristic.***
 
+```python
+def cornersHeuristic(state, problem):
+    """
+    A heuristic for the CornersProblem that you defined.
+
+    state:   The current search state
+            (a data structure you chose in your search problem)
+
+    problem: The CornersProblem instance for this layout.
+
+    This function should always return a number that is a lower bound on the
+    shortest path from the state to a goal of the problem; i.e.  it should be
+    admissible (as well as consistent).
+    """
+    corners = problem.corners # These are the corner coordinates
+    walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
+
+    "*** YOUR CODE HERE ***"
+    # Obtain the position of the state
+    xy = state[0]
+
+    # Calculate the manhatten distance from each corner
+    totalDistance = 0
+    for i in range(len(state[1])):
+            if state[1][i] == 0:
+                # Return the max distance corner
+                totalDistance = max(totalDistance, abs(xy[0] - corners[i][0]) + abs(xy[1] - corners[i][1]))
+
+    return totalDistance
+```
+
+Previously the A* search algorithm used manhattan distance as its heuristic for solving the maze, so to solve the corners I used a similar method. Using the manhattan distance we can calculate the distance to the furthest corner and use that as the shortest path to the goal state of the problem. We use the max distance so that we ensure a lower bound on the shortest path to the goal.
+
+```
+python pacman.py -l mediumCorners -p AStarCornersAgent -z 0.5
+```
+
+![Medium Corners Heuristic](img/mediumCornersHeuristic.gif)
+
+```
+python autograder.py -q q6
+```
+
+![Q6 Score](img/searchq6score.png)
+
+
 ## Q7: Eating All The Dots: Heuristic
 
 ***Now we'll solve a hard search problem: eating all the Pacman food in as few steps as possible. For this, we'll need a new search problem definition which formalizes the food-clearing problem: FoodSearchProblem in searchAgents.py (implemented for you). A solution is defined to be a path that collects all of the food in the Pacman world. For the present project, solutions do not take into account any ghosts or power pellets; solutions only depend on the placement of walls, regular food and Pacman. (Of course ghosts can ruin the execution of a solution! We'll get to that in the next project.) If you have written your general search methods correctly, A* with a null heuristic (equivalent to uniform-cost search) should quickly find an optimal solution to testSearch with no code change on your part (total cost of 7).***
+
+```python
+def foodHeuristic(state, problem):
+    """
+    Your heuristic for the FoodSearchProblem goes here.
+
+    This heuristic must be consistent to ensure correctness.  First, try to come
+    up with an admissible heuristic; almost all admissible heuristics will be
+    consistent as well.
+
+    If using A* ever finds a solution that is worse uniform cost search finds,
+    your heuristic is *not* consistent, and probably not admissible!  On the
+    other hand, inadmissible or inconsistent heuristics may find optimal
+    solutions, so be careful.
+
+    The state is a tuple ( pacmanPosition, foodGrid ) where foodGrid is a Grid
+    (see game.py) of either True or False. You can call foodGrid.asList() to get
+    a list of food coordinates instead.
+
+    If you want access to info like walls, capsules, etc., you can query the
+    problem.  For example, problem.walls gives you a Grid of where the walls
+    are.
+
+    If you want to *store* information to be reused in other calls to the
+    heuristic, there is a dictionary called problem.heuristicInfo that you can
+    use. For example, if you only want to count the walls once and store that
+    value, try: problem.heuristicInfo['wallCount'] = problem.walls.count()
+    Subsequent calls to this heuristic can access
+    problem.heuristicInfo['wallCount']
+    """
+    position, foodGrid = state
+    "*** YOUR CODE HERE ***"
+    distanceFood = 0
+
+    # Calculate the maze distance to each food position and return the furthest away food
+    for loc in foodGrid.asList():
+        distanceFood = max(distanceFood, mazeDistance(position, loc, problem.startingGameState))
+    return distanceFood
+```
+
+Similar to the corner heuristic we just calculate the distance to the furthest piece of food and use that as our lower bound on the shortest path to the goal state.
+
+```
+python pacman.py -l trickySearch -p AStarFoodSearchAgent
+```
+
+![Tricky Search](img/trickySearch.gif)
+
+```
+python autograder.py -q q7
+```
+
+![Q7 Score](img/searchq7score.png)
 
 ## Q8: Suboptimal Search
 ***Sometimes, even with A* and a good heuristic, finding the optimal path through all the dots is hard. In these cases, we'd still like to find a reasonably good path, quickly. In this section, you'll write an agent that always greedily eats the closest dot. ClosestDotSearchAgent is implemented for you in searchAgents.py, but it's missing a key function that finds a path to the closest dot.***
 
 ***Implement the function findPathToClosestDot in searchAgents.py. Our agent solves this maze (suboptimally!) in under a second with a path cost of 350:***
+
+```python
+
+    def findPathToClosestDot(self, gameState):
+        """
+        Returns a path (a list of actions) to the closest dot, starting from
+        gameState.
+        """
+        # Here are some useful elements of the startState
+        startPosition = gameState.getPacmanPosition()
+        food = gameState.getFood()
+        walls = gameState.getWalls()
+        problem = AnyFoodSearchProblem(gameState)
+
+        "*** YOUR CODE HERE ***"
+        # using the bfs we implemented and the anyfoodsearch goal function we implemented we can solve the problem
+        from search import breadthFirstSearch
+
+        return breadthFirstSearch(problem)
+
+    def isGoalState(self, state):
+        """
+        The state is Pacman's position. Fill this in with a goal test that will
+        complete the problem definition.
+        """
+        # Obtain the position of the state
+        x,y = state
+
+        "*** YOUR CODE HERE ***"
+
+        # If the position is a piece of food, reached goal state
+        if (x,y) in self.food.asList():
+            return True
+        
+        return False
+
+
+```
+
+The goal state function was very simple, we just check to see if we are on a piece of food. Using that function we can also just use BFS that we implemented before and use it to solve the problem.
+
+```
+python pacman.py -l bigSearch -p ClosestDotSearchAgent -z .5 
+```
+
+![Tricky Search](img/bigSearchCloseDots.gif)
+
+```
+python autograder.py -q q8
+```
+
+![Q8 Score](img/searchq8score.png)
 
 ## Built With
 
@@ -516,4 +666,4 @@ The project uses Python 2.7.
 
 ## What I learned
 
-## Author
+In this project I refreshed my knowledge on search algorithms. A* search was something I briefly learned at my time in college, however, I was glad to be able to work with it again and further my understanding behind its functionality and the heuristics behind them. I was especially happy about learning to make my own heuristics.
